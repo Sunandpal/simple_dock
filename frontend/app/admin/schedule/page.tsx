@@ -206,8 +206,6 @@ export default function SchedulePage() {
             const isDateChange = !isSameDay(parseISO(selectedBooking.start_time), newStart)
             const newStatus = (selectedBooking.status === 'Late' && isDateChange) ? 'Rescheduled' : selectedBooking.status
 
-            const newStatus = (selectedBooking.status === 'Late' && isDateChange) ? 'Rescheduled' : selectedBooking.status
-
             const res = await fetch(`${API_BASE_URL}/bookings/${selectedBooking.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
