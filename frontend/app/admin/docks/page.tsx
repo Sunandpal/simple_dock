@@ -113,7 +113,7 @@ export default function DockControlCenter() {
 
             setDockName("")
             setDockCapabilities([])
-            setEditingDock(None)
+            setEditingDock(undefined)
             setIsDialogOpen(false)
             fetchDocks()
         } catch (e: any) {
