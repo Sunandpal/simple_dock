@@ -32,7 +32,6 @@ interface Booking {
     carrier_name: string
     po_number: string
     driver_phone: string
-    driver_phone: string
     status: "Pending" | "Confirmed" | "Arrived" | "Completed" | "Cancelled" | "Late" | "Rescheduled"
 }
 
