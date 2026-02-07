@@ -100,9 +100,6 @@ export default function DockControlCenter() {
                 ? { ...editingDock, name: dockName, capabilities: dockCapabilities }
                 : { name: dockName, capabilities: dockCapabilities, is_active: true }
 
-            // DEBUG: Alert the URL and Method to verify
-            alert(`Sending ${method} to ${url}`)
-
             const res = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
