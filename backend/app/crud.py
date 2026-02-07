@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 from typing import List
 from sqlalchemy import and_, or_
 from . import models, schemas
+from datetime import datetime, date
 
 async def get_docks(db: AsyncSession, skip: int = 0, limit: int = 100):
     result = await db.execute(select(models.Dock).offset(skip).limit(limit))
@@ -98,7 +99,7 @@ async def delete_dock(db: AsyncSession, dock_id: int):
     return db_dock
 
 from sqlalchemy import func
-from datetime import datetime, date
+
 
 async def get_dock_metrics(db: AsyncSession, dock_id: int):
     today = date.today()
