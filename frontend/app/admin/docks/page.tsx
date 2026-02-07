@@ -106,12 +106,19 @@ export default function DockControlCenter() {
                 body: JSON.stringify(body)
             })
 
-            if (!res.ok) throw new Error("Failed to save")
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}))
+                throw new Error(errorData.detail || errorData.message || `Server error: ${res.status}`)
+            }
 
+            setDockName("")
+            setDockCapabilities([])
+            setEditingDock(None)
             setIsDialogOpen(false)
             fetchDocks()
-        } catch (e) {
-            alert("Failed to save dock")
+        } catch (e: any) {
+            console.error(e)
+            alert(`Failed to save dock: ${e.message}`)
         }
     }
 
