@@ -17,7 +17,12 @@ app = FastAPI(title="SimpleDock API", version="0.1.0", lifespan=lifespan)
 # Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For MVP, allow all. In prod, specify ["http://localhost:3000"]
+    allow_origins=[
+        "http://localhost:3000",
+        "https://simple-dock-i5twelfye-sunand-pals-projects.vercel.app",
+        "https://simple-dock-git-main-sunand-pals-projects.vercel.app",
+        "https://simple-dock.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
