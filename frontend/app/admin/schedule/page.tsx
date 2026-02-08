@@ -99,6 +99,7 @@ export default function SchedulePage() {
     const [docks, setDocks] = useState<Dock[]>([])
     const [bookings, setBookings] = useState<Booking[]>([])
     const [loading, setLoading] = useState(true)
+    const [errorMsg, setErrorMsg] = useState("")
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
     const [editDate, setEditDate] = useState<Date | undefined>(undefined)
@@ -126,20 +127,24 @@ export default function SchedulePage() {
 
     const fetchData = async () => {
         setLoading(true)
+        setErrorMsg("")
         try {
             const dateStr = format(date, 'yyyy-MM-dd')
 
             // 1. Fetch Docks
             const dockRes = await fetch(`${API_BASE_URL}/docks/`)
+            if (!dockRes.ok) throw new Error("Failed to fetch docks")
             const dockData = await dockRes.json()
             setDocks(dockData)
 
             // 2. Fetch Bookings
             const bookingRes = await fetch(`${API_BASE_URL}/bookings/?date=${dateStr}`)
+            if (!bookingRes.ok) throw new Error("Failed to fetch bookings")
             const bookingData = await bookingRes.json()
             setBookings(bookingData)
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to load schedule data", error)
+            setErrorMsg(error.message)
         } finally {
             setLoading(false)
         }
