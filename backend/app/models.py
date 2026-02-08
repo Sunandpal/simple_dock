@@ -31,6 +31,7 @@ class Booking(Base):
     end_time = Column(DateTime, index=True)
     carrier_name = Column(String)
     po_number = Column(String, index=True)
+    odoo_order_id = Column(Integer, nullable=True) # ID from Odoo Purchase Order
     status = Column(Enum(BookingStatus), default=BookingStatus.PENDING)
     driver_phone = Column(String)
 

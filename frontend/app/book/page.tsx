@@ -46,6 +46,10 @@ export default function BookingWizard() {
 
     // Form Fields
     const [poNumber, setPoNumber] = useState("")
+    const [isVerifyingPO, setIsVerifyingPO] = useState(false)
+    const [odooOrderId, setOdooOrderId] = useState<number | null>(null)
+    const [supplierName, setSupplierName] = useState("")
+
     const [selectedDate, setSelectedDate] = useState("")
     const [selectedTime, setSelectedTime] = useState("")
     const [carrierName, setCarrierName] = useState("")
@@ -54,6 +58,33 @@ export default function BookingWizard() {
 
     // Final assigned dock for the booking
     const [assignedDockId, setAssignedDockId] = useState<number | null>(null)
+
+    const verifyPO = async () => {
+        if (!poNumber) return
+        setIsVerifyingPO(true)
+        setMessage("")
+        setOdooOrderId(null)
+        setSupplierName("")
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/bookings/validate-po?po=${poNumber}`)
+            if (!res.ok) {
+                throw new Error("PO not found or invalid.")
+            }
+            const data = await res.json()
+            if (data.valid) {
+                setOdooOrderId(data.id)
+                setSupplierName(data.partner)
+            } else {
+                throw new Error("Invalid PO.")
+            }
+        } catch (e) {
+            setMessage("PO not found in Odoo. Please contact logistics.")
+            setOdooOrderId(null)
+        } finally {
+            setIsVerifyingPO(false)
+        }
+    }
 
     // Fetch Docks on Mount
     useEffect(() => {
@@ -127,9 +158,15 @@ export default function BookingWizard() {
     }
 
     const handleNext = () => {
-        if (step === 1 && !poNumber.startsWith("PO-")) {
-            setMessage("Invalid PO Number. Must start with 'PO-'")
-            return
+        if (step === 1) {
+            if (!poNumber) {
+                setMessage("Please enter a PO Number")
+                return
+            }
+            if (!odooOrderId) {
+                setMessage("Please verify the PO Number before proceeding.")
+                return
+            }
         }
         if (step === 2 && !selectedLoadType) {
             setMessage("Please select a load type.")
@@ -186,6 +223,7 @@ export default function BookingWizard() {
         const payload = {
             dock_id: availableDock.id,
             po_number: poNumber,
+            odoo_order_id: odooOrderId,
             carrier_name: `${carrierName || "Independent"} (${vehicleType})`, // Combine vehicle type since backend doesn't have a field for it yet
             start_time: startDateTime.toISOString(),
             end_time: endDateTime.toISOString(),
@@ -300,13 +338,31 @@ export default function BookingWizard() {
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="space-y-3">
                                 <Label className="text-base font-semibold text-slate-700">Purchase Order (PO)</Label>
-                                <Input
-                                    value={poNumber}
-                                    onChange={(e) => setPoNumber(e.target.value)}
-                                    placeholder="PO-123456"
-                                    className="h-12 text-lg border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
-                                />
-                                <p className="text-xs text-slate-400">Must start with "PO-"</p>
+                                <div className="flex gap-2">
+                                    <Input
+                                        value={poNumber}
+                                        onChange={(e) => {
+                                            setPoNumber(e.target.value)
+                                            setOdooOrderId(null) // Reset verification on change
+                                            setSupplierName("")
+                                        }}
+                                        placeholder="PO-123456"
+                                        className={`h-12 text-lg border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 ${odooOrderId ? "border-green-500 ring-green-500" : ""}`}
+                                    />
+                                    <Button
+                                        onClick={verifyPO}
+                                        disabled={isVerifyingPO || !poNumber.trim() || odooOrderId !== null}
+                                        className={`h-12 px-6 ${odooOrderId ? "bg-green-600 hover:bg-green-700" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                    >
+                                        {isVerifyingPO ? "Verifying..." : odooOrderId ? "Verified" : "Verify"}
+                                    </Button>
+                                </div>
+
+                                {odooOrderId && (
+                                    <p className="text-sm text-green-600 font-medium flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4" /> Supplier: {supplierName}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-3">

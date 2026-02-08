@@ -8,21 +8,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet"
 import { Sidebar } from "@/components/Sidebar"
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, Truck, User, Phone, CheckCircle2, XCircle, AlertCircle } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-// DnD Imports
-import { DndContext, useDraggable, useDroppable, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core"
-import { CSS } from "@dnd-kit/utilities"
-import { API_BASE_URL } from "@/lib/config"
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, Truck, User, Phone, CheckCircle2, XCircle, AlertCircle, ExternalLink } from "lucide-react"
 
-// Types
-interface Dock {
-    id: number
-    name: string
-    capabilities: string[]
-    is_active: boolean
-}
+// ... imports ...
 
 interface Booking {
     id: number
@@ -31,6 +19,7 @@ interface Booking {
     end_time: string
     carrier_name: string
     po_number: string
+    odoo_order_id?: number
     driver_phone: string
     status: "Pending" | "Confirmed" | "Arrived" | "Completed" | "Cancelled" | "Late" | "Rescheduled"
 }
@@ -471,6 +460,28 @@ export default function SchedulePage() {
                                             <p className="font-bold text-lg">{selectedBooking.status || "Confirmed"}</p>
                                             <p className="text-sm opacity-90">Current Status</p>
                                         </div>
+                                    </div>
+
+                                    {/* Odoo Validation Section */}
+                                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                        <div>
+                                            <span className="text-xs text-slate-500 font-medium uppercase">Purchase Order</span>
+                                            <div className="font-semibold text-slate-900 flex items-center gap-2">
+                                                {selectedBooking.po_number}
+                                                {selectedBooking.odoo_order_id && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                                            </div>
+                                        </div>
+                                        {selectedBooking.odoo_order_id && (
+                                            <Button size="sm" variant="outline" className="gap-2" asChild>
+                                                <a
+                                                    href={`${process.env.NEXT_PUBLIC_ODOO_URL || 'https://odoo.com'}/web#id=${selectedBooking.odoo_order_id}&model=purchase.order&view_type=form`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    View in Odoo <ExternalLink className="h-3 w-3" />
+                                                </a>
+                                            </Button>
+                                        )}
                                     </div>
 
                                     <div className="space-y-4">

@@ -12,6 +12,19 @@ def send_notification(booking_ref: str, time_str: str):
     # Mock Notification
     print(f"XXX NOTICE: Booking {booking_ref} Confirmed for {time_str} [Sent via WhatsApp] XXX")
 
+from ..odoo_client import odoo_client
+
+@router.get("/validate-po")
+def validate_po(po: str):
+    """
+    Validates a PO against Odoo ERP.
+    Returns {valid: true, id: int, partner: str} or 404.
+    """
+    result = odoo_client.validate_po(po)
+    if not result:
+        raise HTTPException(status_code=404, detail="PO not found in Odoo (must be in 'Purchase' or 'Done' state)")
+    return result
+
 @router.post("/", response_model=schemas.Booking)
 async def create_booking(booking: schemas.BookingCreate, background_tasks: BackgroundTasks, db: AsyncSession = Depends(database.get_db)):
     db_booking = await crud.create_booking(db=db, booking=booking)

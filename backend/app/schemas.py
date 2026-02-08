@@ -24,6 +24,7 @@ class BookingBase(BaseModel):
     end_time: datetime
     carrier_name: str
     po_number: str
+    odoo_order_id: Optional[int] = None
     driver_phone: Optional[str] = None
 
     @validator('po_number')
