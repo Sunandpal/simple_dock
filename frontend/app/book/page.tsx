@@ -1,6 +1,25 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { format } from "date-fns"
+
+// ... existing imports ...
+
+// Inside component
+const startDateTime = new Date(`${selectedDate}T${selectedTime}`)
+// Add 60 minutes for end time
+const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000)
+
+// Send as Local ISO string (No 'Z') so backend treats it as "Wall Clock Time"
+// This fixes the 4-hour timezone offset issue where 9am becomes 5am
+const payload = {
+    dock_id: availableDock.id,
+    po_number: poNumber,
+    odoo_order_id: odooOrderId,
+    carrier_name: `${carrierName || "Independent"} (${vehicleType})`,
+    start_time: format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss"),
+    end_time: format(endDateTime, "yyyy-MM-dd'T'HH:mm:ss"),
+    driver_phone: contactPhone || "N/A"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,11 +29,11 @@ import QRCode from "react-qr-code"
 import { API_BASE_URL } from "@/lib/config"
 
 interface Dock {
-    id: number
+        id: number
     name: string
     capabilities: string[]
     is_active: boolean
-}
+    }
 
 // Load Types Map
 const LOAD_TYPES = [
@@ -225,8 +244,8 @@ export default function BookingWizard() {
             po_number: poNumber,
             odoo_order_id: odooOrderId,
             carrier_name: `${carrierName || "Independent"} (${vehicleType})`, // Combine vehicle type since backend doesn't have a field for it yet
-            start_time: startDateTime.toISOString(),
-            end_time: endDateTime.toISOString(),
+            start_time: format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss"),
+            end_time: format(endDateTime, "yyyy-MM-dd'T'HH:mm:ss"),
             driver_phone: contactPhone || "N/A"
         }
 
