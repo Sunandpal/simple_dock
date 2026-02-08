@@ -244,6 +244,7 @@ export default function BookingWizard() {
                 const errorMessage = Array.isArray(err.detail)
                     ? err.detail.map((e: any) => `${e.loc[1]}: ${e.msg}`).join(" | ")
                     : err.detail || "Booking failed"
+                throw new Error(errorMessage)
             }
 
             const booking = await res.json()
