@@ -7,8 +7,12 @@ from .routers import docks, bookings, drivers
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Create tables
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
+        print(f"Database Startup Error: {e}")
+        # We might want to re-raise or fallback, but printing helps debug logs
     yield
     # Shutdown
 
