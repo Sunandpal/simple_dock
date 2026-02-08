@@ -95,7 +95,7 @@ export default function BookingWizard() {
                 const data = await res.json()
                 setDocks(data.filter((d: Dock) => d.is_active))
             } catch (e) {
-                setMessage("Could not load available docks.")
+                setMessage(`Could not load available docks. (Backend: ${API_BASE_URL})`)
             }
         }
         fetchDocks()

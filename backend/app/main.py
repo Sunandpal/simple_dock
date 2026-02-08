@@ -17,8 +17,8 @@ app = FastAPI(title="SimpleDock API", version="0.1.0", lifespan=lifespan)
 # Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https://.*\.vercel\.app",
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
