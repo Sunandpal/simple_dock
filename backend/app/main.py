@@ -22,6 +22,17 @@ async def lifespan(app: FastAPI):
             except Exception:
                 print("Migrating: Adding odoo_order_id to bookings")
                 await conn.execute(text("ALTER TABLE bookings ADD COLUMN odoo_order_id INTEGER"))
+            
+            # Seed Default Dock if empty
+            res = await conn.execute(text("SELECT count(*) FROM docks"))
+            if res.scalar() == 0:
+                print("Seeding default Dock 1")
+                # We use raw SQL for simplicity to avoid circular imports with models if possible, 
+                # but standard SQL 'INSERT' works for both.
+                # capabilities is JSON. '["General"]' is valid JSON.
+                # is_active=1 (True)
+                # Using text() to be safe across generic drivers
+                await conn.execute(text("INSERT INTO docks (name, capabilities, is_active) VALUES ('Dock 1', '[\"General\"]', 1)"))
                 
     except Exception as e:
         print(f"Database Startup Error: {e}")
