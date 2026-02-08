@@ -27,11 +27,7 @@ class BookingBase(BaseModel):
     odoo_order_id: Optional[int] = None
     driver_phone: Optional[str] = None
 
-    @validator('po_number')
-    def validate_po_number(cls, v):
-        if not v.startswith("PO-"):
-            raise ValueError('PO Number must start with "PO-"')
-        return v
+
     
     @validator('end_time')
     def validate_duration(cls, v, values):
