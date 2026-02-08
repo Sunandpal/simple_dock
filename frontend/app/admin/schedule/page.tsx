@@ -10,7 +10,20 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import { Sidebar } from "@/components/Sidebar"
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, Truck, User, Phone, CheckCircle2, XCircle, AlertCircle, ExternalLink } from "lucide-react"
 
-// ... imports ...
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+// DnD Imports
+import { DndContext, useDraggable, useDroppable, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core"
+import { CSS } from "@dnd-kit/utilities"
+import { API_BASE_URL } from "@/lib/config"
+
+// Types
+interface Dock {
+    id: number
+    name: string
+    capabilities: string[]
+    is_active: boolean
+}
 
 interface Booking {
     id: number
