@@ -10,9 +10,21 @@ async def lifespan(app: FastAPI):
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            
+            # Auto-Migration for SQLite/Postgres: Add missing columns if table exists but column doesn't
+            # This is a lightweight "migration" for this specific update
+            from sqlalchemy import text
+            
+            # Check for odoo_order_id in bookings
+            # Note: This is a hacky check but works for both SQLite and PG for this specific case
+            try:
+                await conn.execute(text("SELECT odoo_order_id FROM bookings LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding odoo_order_id to bookings")
+                await conn.execute(text("ALTER TABLE bookings ADD COLUMN odoo_order_id INTEGER"))
+                
     except Exception as e:
         print(f"Database Startup Error: {e}")
-        # We might want to re-raise or fallback, but printing helps debug logs
     yield
     # Shutdown
 
