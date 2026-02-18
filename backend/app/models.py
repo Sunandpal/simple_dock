@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, JSON, Enum
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, JSON, Enum, func
 from sqlalchemy.orm import relationship
 import enum
 from .database import Base
@@ -36,3 +36,12 @@ class Booking(Base):
     driver_phone = Column(String)
 
     dock = relationship("Dock", back_populates="bookings")
+
+class Driver(Base):
+    __tablename__ = "drivers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    phone = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    name = Column(String)
+    created_at = Column(DateTime, default=func.now())

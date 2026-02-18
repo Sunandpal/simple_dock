@@ -64,3 +64,26 @@ class DriverSummary(BaseModel):
     total_visits: int
     last_visit: datetime
     status: str = "Active"
+
+class DriverBase(BaseModel):
+    phone: str
+    name: str
+
+class DriverCreate(DriverBase):
+    password: str
+
+class DriverLogin(BaseModel):
+    phone: str
+    password: str
+
+class DriverResponse(DriverBase):
+    id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    phone: Optional[str] = None

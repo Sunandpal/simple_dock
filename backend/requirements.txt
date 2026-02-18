@@ -8,3 +8,7 @@ pydantic-settings
 alembic
 python-dotenv
 greenlet
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+bicycle
